@@ -10,11 +10,11 @@ class MultiSwitchTopo(Topo):
         self.addLink(switch,switch2)
         # Python's range(N) generates 0..N-1
         for h in range(n):
-            host = self.addHost('h%s' % (h + 1))
+            host = self.addHost('n%s' % (h + 1))
             self.addLink(host, switch)
         
         for h in range(n):
-            host = self.addHost('h%s' % (h + n + 1))
+            host = self.addHost('n%s' % (h + n + 1))
             self.addLink(host, switch)
 
 def simpleTest():
