@@ -1,7 +1,7 @@
 from pox.core import core
 import pox.openflow.libopenflow_01 as of
 from pox.lib.util import dpid_to_str, str_to_dpid
-from pox.lib.util import str_to_bool
+from pox.lib.util import str_to_bool, dpid_to_str
 import time
 import pox.lib.packet as pkt
 from pymongo import MongoClient
@@ -22,7 +22,8 @@ class FirewallSwitch (object):
       return "Source IP: " + str(packet.srcip) + ", Destination IP: " + str(packet.dstip)
     def logdb(db, ip, event, msg):
       log.info("Event " + event + ", msg " + msg)
-      db.insert_one({"time": datetime.datetime.utcnow(), "event": event, "source": str(ip.srcip), "destination": str(ip.dstip), "message": msg})
+      db.insert_one({"time": datetime.datetime.utcnow(), "event": event, "source": str(ip.srcip), "destination": str(ip.dstip),
+      "message": msg, "switch": dpid_to_str(self.connection.dpid)})
 
     ip = packet.find('ipv4')
     if ip is not None:
@@ -42,21 +43,21 @@ class FirewallSwitch (object):
 
         protocol = rule['protocol']
         if protocol == "icmp" and icmp is not None:
-          logdb(logmongo, ip, "Deny", "ICMP PACKET BROKE RULE, NOT ROUTING: " + iptostring(ip))
+          logdb(logmongo, ip, "Deny", "ICMP packet broke rule, dropping packet")
           return
         if protocol == "tcp" and tcp is not None:
-          logdb(logmongo, ip, "Deny", "TCP PACKET BROKE RULE, NOT ROUTING: " + iptostring(ip))
+          logdb(logmongo, ip, "Deny", "TCP packet broke rule, dropping packet")
           return
         if protocol == "udp" and udp is not None:
-          logdb(logmongo, ip, "Deny", "UDP PACKET BROKE RULE, NOT ROUTING: " + iptostring(ip))
+          logdb(logmongo, ip, "Deny", "UDP packet broke rule, dropping packet")
           return
       
       if tcp is not None:
-        logdb(logmongo, ip, "Permit", "TCP packet permitted: " + iptostring(ip))
+        logdb(logmongo, ip, "Permit", "TCP packet permitted")
       if udp is not None:
-        logdb(logmongo, ip, "Permit", "UDP packet permitted: " + iptostring(ip))
+        logdb(logmongo, ip, "Permit", "UDP packet permitted")
       if icmp is not None:
-        logdb(logmongo, ip, "Permit", "ICMP packet permitted: " + iptostring(ip))
+        logdb(logmongo, ip, "Permit", "ICMP packet permitted")
 
     msg = of.ofp_packet_out()
     msg.data = event.ofp
