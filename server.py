@@ -24,7 +24,7 @@ def gui(path):
 def getlog():
     res = ""
     for entry in logdb.find(limit=40).sort("_id", pymongo.DESCENDING):
-        res = res + "[" + entry['time'].strftime("%m/%d/%Y, %H:%M:%S.%f") + "];" + entry['message'] + "\n"
+        res = res + "[" + entry['time'].strftime("%m/%d/%Y, %H:%M:%S.%f") + "];" + entry['message'] + ";" + entry['source'] + ";"+entry['destination'] + ";"+entry['switch'] + "\n"
     return res
 
 @app.route('/rules', methods=['GET'])
