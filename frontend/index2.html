@@ -20,7 +20,15 @@
         $.get("../log", function(data, status){
           var lines = data.split("\n");
           for (var i = lines.length - 1; i >= 0; i--) {
-            $("#logtablehead").after("<tr><th scope=\"row\">"+ lines[i].split(";")[0] +"</th><td>" + lines[i].split(";")[1] + "</td></tr>")
+            spl = lines[i].split(";")
+            console.log(spl)
+            console.log(spl[2])
+            console.log(spl[0])
+            console.log(spl[3])
+            $("#logtablehead").after("<tr><th scope=\"row\">"+ spl[4] +"</th><td>"  + spl[0] +"</td><td>" 
+              + spl[2] +"</td><td>"
+              + spl[3] +"</td><td>"
+              + spl[1] + "</td></tr>") //msg
             
               // save(lines[i]);
           }
@@ -30,7 +38,7 @@
 
           $.get("../rules", function(data, status){
           var lines = data.split(",");
-          for (var i = 0, len = lines.length; i < len; i++) {
+          for (var i = 0, len = lines.length - 1; i < len; i++) {
             $("#rulestablehead").after("<tr class=\"table-danger\"><th scope=\"row\">"+ lines[i].split(";")[0] +"</th><td>"+ lines[i].split(";")[1] +"</td><td>"+ lines[i].split(";")[2] +"</td><td><button type=\"button\" "
             + "onclick=\"location.href = 'http://localhost/deleterules?protocol="+ lines[i].split(";")[0] +"&source="+ lines[i].split(";")[1] +"&destination="+ lines[i].split(";")[2] +"';\" class=\"btn btn-danger\">Delete</button></td></tr>")
             
@@ -153,7 +161,10 @@
               <table class="table table-hover" id="logtable">
                 <thead id="logtablehead">
                   <tr>
+                    <th scope="col">Switch</th>
                     <th scope="col">Time</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Destination</th>
                     <th scope="col">Message</th>
                   </tr>
                 </thead>
